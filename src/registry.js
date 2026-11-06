@@ -1,4 +1,27 @@
-function enc(n){return n.startsWith("@")?n.replace("/","%2f"):encodeURIComponent(n);}
-export async function fetchPackageMetadata(base,name){const r=await fetch(`${base.replace(/\\/$/,"")}/${enc(name)}`,{headers:{accept:"application/vnd.npm.install-v1+json"}});if(!r.ok)throw new Error(`npm Registry: HTTP ${r.status} при запросе ${name}`);return r.json();}
-export async function getPackageDependencies(base,name,requested){const m=await fetchPackageMetadata(base,name);const version=requested==="latest"?m["dist-tags"]?.latest:requested;const v=m.versions?.[version];if(!v)throw new Error(`Версия ${version} пакета ${name} не найдена в Registry`);return{version,dependencies:{...(v.dependencies??{}),...(v.optionalDependencies??{})}};}
-export async function resolveLatestDependencies(base,name){return getPackageDependencies(base,name,"latest");}
+function enc(name) {
+  return name.startsWith("@") ? name.replace("/", "%2f") : encodeURIComponent(name);
+}
+
+export async function fetchPackageMetadata(base, name) {
+  const root = base.endsWith("/") ? base.slice(0, -1) : base;
+  const response = await fetch(root + "/" + enc(name), {
+    headers: { accept: "application/vnd.npm.install-v1+json" }
+  });
+  if (!response.ok) throw new Error("npm Registry: HTTP " + response.status + " при запросе " + name);
+  return response.json();
+}
+
+export async function getPackageDependencies(base, name, requestedVersion) {
+  const metadata = await fetchPackageMetadata(base, name);
+  const version = requestedVersion === "latest" ? metadata["dist-tags"]?.latest : requestedVersion;
+  const release = metadata.versions?.[version];
+  if (!release) throw new Error("Версия " + version + " пакета " + name + " не найдена в Registry");
+  return {
+    version,
+    dependencies: { ...(release.dependencies ?? {}), ...(release.optionalDependencies ?? {}) }
+  };
+}
+
+export async function resolveLatestDependencies(base, name) {
+  return getPackageDependencies(base, name, "latest");
+}
