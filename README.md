@@ -5,7 +5,7 @@ CLI-инструмент построения графа зависимосте�
 | Опция | Назначение | По умолчанию |
 |---|---|---|
 | --package <имя> | анализируемый пакет | обязательно |
-| --repository <URL|путь> | npm Registry или JSON-файл | https://registry.npmjs.org |
+| --repository <URL или путь> | npm Registry или JSON-файл | https://registry.npmjs.org |
 | --test-mode | тестовый режим | выключен |
 | --version <версия> | версия корневого пакета | latest |
 | --output <файл> | имя выходного файла графа | dependency-graph.dot |
