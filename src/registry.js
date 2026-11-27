@@ -1,27 +1,4 @@
-function enc(name) {
-  return name.startsWith("@") ? name.replace("/", "%2f") : encodeURIComponent(name);
-}
-
-export async function fetchPackageMetadata(base, name) {
-  const root = base.endsWith("/") ? base.slice(0, -1) : base;
-  const response = await fetch(root + "/" + enc(name), {
-    headers: { accept: "application/vnd.npm.install-v1+json" }
-  });
-  if (!response.ok) throw new Error("npm Registry: HTTP " + response.status + " при запросе " + name);
-  return response.json();
-}
-
-export async function getPackageDependencies(base, name, requestedVersion) {
-  const metadata = await fetchPackageMetadata(base, name);
-  const version = requestedVersion === "latest" ? metadata["dist-tags"]?.latest : requestedVersion;
-  const release = metadata.versions?.[version];
-  if (!release) throw new Error("Версия " + version + " пакета " + name + " не найдена в Registry");
-  return {
-    version,
-    dependencies: { ...(release.dependencies ?? {}), ...(release.optionalDependencies ?? {}) }
-  };
-}
-
-export async function resolveLatestDependencies(base, name) {
-  return getPackageDependencies(base, name, "latest");
-}
+function encodePackageName(name){return name.startsWith("@")?name.replace("/","%2f"):encodeURIComponent(name);}
+export async function fetchPackageMetadata(base,name){const root=base.endsWith("/")?base.slice(0,-1):base;const response=await fetch(root+"/"+encodePackageName(name),{headers:{accept:"application/vnd.npm.install-v1+json"}});if(!response.ok)throw new Error("npm Registry: HTTP "+response.status+" при запросе "+name);return response.json();}
+export async function getPackageDependencies(base,name,requestedVersion){const metadata=await fetchPackageMetadata(base,name);const version=requestedVersion==="latest"?metadata["dist-tags"]?.latest:requestedVersion;const release=metadata.versions?.[version];if(!release)throw new Error("Версия "+version+" пакета "+name+" не найдена в Registry");return{version,dependencies:{...(release.dependencies??{}),...(release.optionalDependencies??{})}};}
+export async function resolveLatestDependencies(base,name){return getPackageDependencies(base,name,"latest");}
