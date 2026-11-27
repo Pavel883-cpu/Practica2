@@ -1,9 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { loadTestGraph, buildGraph } from "../src/graph.js";
-const sample = new URL("../test-repos/sample.json", import.meta.url).pathname;
-const isolated = new URL("../test-repos/isolated.json", import.meta.url).pathname;
-const invalid = new URL("../test-repos/invalid.json", import.meta.url).pathname;
+import { fileURLToPath } from "node:url";
+const sample = fileURLToPath(new URL("../test-repos/sample.json", import.meta.url));
+const isolated = fileURLToPath(new URL("../test-repos/isolated.json", import.meta.url));
+const invalid = fileURLToPath(new URL("../test-repos/invalid.json", import.meta.url));
 
 test("читает тестовый граф", async () => {
   const graph = await loadTestGraph(sample);
