@@ -29,6 +29,7 @@ export function parseArgs(argv) {
   if (!/^(?:@[a-z0-9._-]+\/)?[a-z0-9._-]+$/i.test(options.package)) throw new Error("Некорректное имя npm-пакета");
   if (!options.version.trim()) throw new Error("--version не может быть пустой");
   if (!options.output.trim()) throw new Error("--output не может быть пустой");
+  if (options.testMode && !seen.has("--repository")) throw new Error("В тестовом режиме укажите путь к файлу в --repository");
   if (options.testMode) options.repository = path.resolve(options.repository);
   else { try { new URL(options.repository); } catch { throw new Error("--repository должен быть корректным URL"); } }
   return options;
